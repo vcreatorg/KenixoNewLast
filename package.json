@@ -1,0 +1,25 @@
+{
+  "name": "kenixonew",
+  "version": "1.0.0",
+  "main": "inde.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "best-samp-query": "^1.1.1",
+    "better-sqlite3": "^11.10.0",
+    "discord.js": "^14.19.3",
+    "fs": "^0.0.1-security",
+    "gamedig": "^5.3.0",
+    "node-samp-query": "^1.0.0",
+    "pagination.js": "^0.1.1",
+    "path": "^0.12.7",
+    "quick.db": "^9.1.7",
+    "samp-query": "^0.1.5",
+    "table": "^6.9.0"
+  }
+}

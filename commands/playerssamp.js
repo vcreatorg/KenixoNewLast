@@ -41,7 +41,9 @@ function createPlayersEmbed(players, pageIndex, totalPages, serverHostname, lang
     const embed = createSimpleEmbed(
         lang.playersTitle.replace('{0}', serverHostname).replace('{1}', pageIndex + 1).replace('{2}', totalPages),
         `${playerList}\n\nTotal ${lang.playersOnline}: ${totalPlayersOnline}`,
-        'info'
+        'info',
+        'https://i.imgur.com/QYeGxrV.png'
+
     );
     return embed;
 }

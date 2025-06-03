@@ -4,6 +4,7 @@ const { ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionsBitField } = re
 const { getBorderCharacters, table } = require('table');
 const paginationEmbed = require('../pagination.js');
 const query = require('samp-query');
+const { GameDig } = require('gamedig'); // Impor pustaka gamedig
 
 // Fungsi untuk membagi array menjadi bagian-bagian (halaman)
 function chunkArray(array, chunkSize) {
@@ -14,12 +15,12 @@ function chunkArray(array, chunkSize) {
     return chunks;
 }
 
-// Fungsi untuk membuat embed pemain untuk halaman tertentu
-function createPlayersEmbed(players, pageIndex, totalPages, serverHostname, lang) {
+function createPlayersEmbed(players, pageIndex, totalPages, serverHostname, lang, botIcon) {
     const playersOnPage = players[pageIndex];
-    const totalPlayersOnline = players.flat().length; // Total semua pemain, tanpa batas 10 per halaman
+    const totalPlayersOnline = players.flat().length;
 
     // Tentukan lebar kolom maksimum untuk ID, Nama, Skor, Ping
+    // Gamedig player objects untuk SA:MP: {id, name, score, ping}
     const maxIdLength = Math.max(...playersOnPage.map(p => String(p.id).length), 2);
     const maxNameLength = Math.max(...playersOnPage.map(p => p.name.length), 14);
     const maxScoreLength = Math.max(...playersOnPage.map(p => String(p.score).length), 5);
@@ -39,9 +40,8 @@ function createPlayersEmbed(players, pageIndex, totalPages, serverHostname, lang
 
     const embed = createSimpleEmbed(
         lang.playersTitle.replace('{0}', serverHostname).replace('{1}', pageIndex + 1).replace('{2}', totalPages),
-        `${playerList}\n\nTotal pemain online: ${totalPlayersOnline}`, // Tambahkan total pemain
-        'info',
-        'https://i.imgur.com/QYeGxrV.png'
+        `${playerList}\n\nTotal ${lang.playersOnline}: ${totalPlayersOnline}`,
+        'info'
     );
     return embed;
 }
@@ -63,6 +63,92 @@ module.exports = {
             );
             return message.reply({ embeds: [noIpSetEmbed] });
         }
+
+        GameDig.query({
+            type: 'gtasam', // Tipe game FiveM
+            host: host,
+            port: port
+        }).then( async function (state) {
+
+            if (!state.players || !Array.isArray(state.players) || state.players.length === 0) {
+                const noPlayersEmbed = createSimpleEmbed(
+                    lang.playersNoPlayersOnlineT,
+                    lang.playersNoPlayersOnline,
+                    'error'
+                );
+                return message.reply({ embeds: [noPlayersEmbed] });
+            }
+
+            const pages = chunkArray(state.players, 10); // 10 pemain per halaman
+            let currentPageIndex = 0;
+            const totalPages = pages.length;
+
+            const getButtons = (currentPage, total) => {
+                const row = new ActionRowBuilder()
+                    .addComponents(
+                        new ButtonBuilder()
+                            .setCustomId('previous_page_samp') // Custom ID yang unik
+                            .setLabel(lang.buttonPrevious)
+                            .setStyle(ButtonStyle.Primary)
+                            .setDisabled(currentPage === 0),
+                        new ButtonBuilder()
+                            .setCustomId('next_page_samp') // Custom ID yang unik
+                            .setLabel(lang.buttonNext)
+                            .setStyle(ButtonStyle.Primary)
+                            .setDisabled(currentPage === total - 1),
+                    );
+                return row;
+            };
+
+            const initialEmbed = createPlayersEmbed(pages, currentPageIndex, totalPages, state.name || `${host}:${port}`, lang);
+            const replyMessage = await message.reply({
+                embeds: [initialEmbed],
+                components: [getButtons(currentPageIndex, totalPages)]
+            });
+
+            const collector = replyMessage.createMessageComponentCollector({
+                filter: i => i.user.id === message.author.id,
+                time: 60000,
+            });
+
+            collector.on('collect', async i => {
+                if (i.customId === 'previous_page_samp') {
+                    currentPageIndex--;
+                } else if (i.customId === 'next_page_samp') {
+                    currentPageIndex++;
+                }
+
+                const newEmbed = createPlayersEmbed(pages, currentPageIndex, totalPages, state.name || `${host}:${port}`, lang);
+                await i.update({
+                    embeds: [newEmbed],
+                    components: [getButtons(currentPageIndex, totalPages)]
+                });
+            });
+
+            collector.on('end', async () => {
+                const disabledButtonsRow = new ActionRowBuilder()
+                    .addComponents(
+                        new ButtonBuilder()
+                            .setCustomId('previous_page_samp_disabled')
+                            .setLabel(lang.buttonPrevious)
+                            .setStyle(ButtonStyle.Secondary)
+                            .setDisabled(true),
+                        new ButtonBuilder()
+                            .setCustomId('next_page_samp_disabled')
+                            .setLabel(lang.buttonNext)
+                            .setStyle(ButtonStyle.Secondary)
+                            .setDisabled(true),
+                    );
+                try {
+                    await replyMessage.edit({ components: [disabledButtonsRow] });
+                } catch (err) {
+                    console.error('Could not disable SA:MP players buttons:', err);
+                }
+            });
+
+        }).catch( async function (error) {
+        });
+        /*
 
         // Kirim pesan "loading"
         const loadingEmbed = createSimpleEmbed(
@@ -170,6 +256,6 @@ module.exports = {
                     message.channel.send({ content: `_${lang.buttonDisabled}_`, ephemeral: true }); // Mengirim pesan sementara ke pengguna
                 });
             }
-        });
+        });*/
     },
 };

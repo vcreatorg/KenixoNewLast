@@ -1,6 +1,6 @@
 // commands/setfivemip.js
 const { createSimpleEmbed } = require('../utils/embedBuilder');
-const { PermissionsBitField } = require('discord.js');
+const { Permissions } = require('discord.js');
 
 module.exports = {
     name: 'setfivemip',
@@ -10,7 +10,7 @@ module.exports = {
     usage: '<ip:port | remove>', // Contoh: !setfivemip 127.0.0.1:30120 atau !setfivemip remove
     async execute(message, args, client, db, lang, currentPrefix) {
         // Periksa izin Administrator
-        if (!message.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
+        if (!message.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) {
             const noPermsEmbed = createSimpleEmbed(
                 lang.setFivemIpNoPermission.split('.')[0],
                 lang.setFivemIpNoPermission,

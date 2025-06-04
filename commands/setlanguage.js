@@ -1,6 +1,6 @@
 // commands/setlanguage.js
 const { createSimpleEmbed } = require('../utils/embedBuilder');
-const { PermissionsBitField } = require('discord.js');
+const { Permissions } = require('discord.js');
 
 module.exports = {
     name: 'setlanguage',
@@ -10,7 +10,7 @@ module.exports = {
     usage: '<id/en>', // Contoh: en, id
     async execute(message, args, client, db, lang) {
         // Periksa izin Administrator
-        if (!message.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
+        if (!message.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) {
             const noPermsEmbed = createSimpleEmbed(
                 lang.setLangNoPermission.split('.')[0], // Mengambil bagian pertama kalimat sebagai judul
                 lang.setLangNoPermission,

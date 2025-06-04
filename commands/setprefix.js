@@ -1,6 +1,6 @@
 // commands/setprefix.js
 const { createSimpleEmbed } = require('../utils/embedBuilder');
-const { PermissionsBitField } = require('discord.js'); // Pastikan ini diimpor
+const { Permissions } = require('discord.js'); // Pastikan ini diimpor
 
 module.exports = {
     name: 'setprefix',
@@ -10,7 +10,7 @@ module.exports = {
     usage: '<input>', // Contoh: ! . -
     async execute(message, args, client, db, lang) {
         // Periksa izin Administrator
-        if (!message.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
+        if (!message.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) {
             const noPermsEmbed = createSimpleEmbed(
                 lang.setPrefixNoPermission.split('.')[0], // Mengambil bagian pertama kalimat sebagai judul
                 lang.setPrefixNoPermission,

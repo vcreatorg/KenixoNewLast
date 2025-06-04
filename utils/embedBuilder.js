@@ -1,5 +1,5 @@
-// utils/embedBuilder.js
-const { EmbedBuilder } = require('discord.js');
+// utils/MessageEmbed.js
+const { MessageEmbed  } = require('discord.js');
 
 /**
  * Membuat Discord Embed sederhana dengan warna yang sudah ditentukan.
@@ -8,7 +8,7 @@ const { EmbedBuilder } = require('discord.js');
  * @param {string} [colorType='default'] - Tipe warna Embed ('default', 'success', 'error', 'warning', 'info').
  * @param {string} [thumbnailUrl] - URL Thumbnail Embed.
  * @param {string} [imageUrl] - URL Gambar utama Embed.
- * @returns {EmbedBuilder} Objek EmbedBuilder.
+ * @returns {MessageEmbed } Objek MessageEmbed.
  */
 function createSimpleEmbed(title, description, colorType = 'default', thumbnailUrl = null, imageUrl = null) {
     let color;
@@ -32,7 +32,7 @@ function createSimpleEmbed(title, description, colorType = 'default', thumbnailU
             break;
     }
 
-    const embed = new EmbedBuilder()
+    const embed = new MessageEmbed()
         .setTitle(title)
         .setDescription(description)
         .setColor(color)

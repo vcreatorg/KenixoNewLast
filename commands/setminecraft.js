@@ -1,6 +1,6 @@
 // commands/setminecraft.js
 const { createSimpleEmbed } = require('../utils/embedBuilder');
-const { PermissionsBitField } = require('discord.js');
+const { Permissions } = require('discord.js');
 
 module.exports = {
     name: 'setminecraft',
@@ -10,7 +10,7 @@ module.exports = {
     usage: '<on|off>',
     async execute(message, args, client, db, lang, currentPrefix) {
         // Periksa izin Administrator (gunakan string bahasa yang sudah ada)
-        if (!message.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
+        if (!message.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) {
             const noPermsEmbed = createSimpleEmbed(
                 lang.setSampNoPermission.split('.')[0], // Re-use string from setSampNoPermission
                 lang.setSampNoPermission,

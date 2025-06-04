@@ -1,6 +1,6 @@
 // commands/ping.js
 const { createSimpleEmbed } = require('../utils/embedBuilder.js'); // Import fungsi
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionsBitField } = require("discord.js");
+const { MessageActionRow, MessageButton } = require("discord.js");
 const { getBorderCharacters, table } = require('table');
 const paginationEmbed = require('../pagination.js');
 const query = require('samp-query');
@@ -86,17 +86,17 @@ module.exports = {
             const totalPages = pages.length;
 
             const getButtons = (currentPage, total) => {
-                const row = new ActionRowBuilder()
+                const row = new MessageActionRow()
                     .addComponents(
-                        new ButtonBuilder()
+                        new MessageButton()
                             .setCustomId('previous_page_samp') // Custom ID yang unik
                             .setLabel(lang.buttonPrevious)
-                            .setStyle(ButtonStyle.Primary)
+                            .setStyle('PRIMARY')
                             .setDisabled(currentPage === 0),
-                        new ButtonBuilder()
+                        new MessageButton()
                             .setCustomId('next_page_samp') // Custom ID yang unik
                             .setLabel(lang.buttonNext)
-                            .setStyle(ButtonStyle.Primary)
+                            .setStyle('PRIMARY')
                             .setDisabled(currentPage === total - 1),
                     );
                 return row;
@@ -128,17 +128,17 @@ module.exports = {
             });
 
             collector.on('end', async () => {
-                const disabledButtonsRow = new ActionRowBuilder()
+                const disabledButtonsRow = new MessageActionRow()
                     .addComponents(
-                        new ButtonBuilder()
+                        new MessageButton()
                             .setCustomId('previous_page_samp_disabled')
                             .setLabel(lang.buttonPrevious)
-                            .setStyle(ButtonStyle.Secondary)
+                            .setStyle('SECONDARY')
                             .setDisabled(true),
-                        new ButtonBuilder()
+                        new MessageButton()
                             .setCustomId('next_page_samp_disabled')
                             .setLabel(lang.buttonNext)
-                            .setStyle(ButtonStyle.Secondary)
+                            .setStyle('SECONDARY')
                             .setDisabled(true),
                     );
                 try {
@@ -196,12 +196,12 @@ module.exports = {
                             new ButtonBuilder()
                                 .setCustomId('previous_page')
                                 .setLabel(lang.buttonPrevious)
-                                .setStyle(ButtonStyle.Primary)
+                                .setStyle('PRIMARY')
                                 .setDisabled(currentPage === 0), // Disable jika di halaman pertama
                             new ButtonBuilder()
                                 .setCustomId('next_page')
                                 .setLabel(lang.buttonNext)
-                                .setStyle(ButtonStyle.Primary)
+                                .setStyle('PRIMARY')
                                 .setDisabled(currentPage === total - 1), // Disable jika di halaman terakhir
                         );
                     return row;
@@ -241,12 +241,12 @@ module.exports = {
                             new ButtonBuilder()
                                 .setCustomId('previous_page_disabled')
                                 .setLabel(lang.buttonPrevious)
-                                .setStyle(ButtonStyle.Secondary)
+                                .setStyle('SECONDARY')
                                 .setDisabled(true),
                             new ButtonBuilder()
                                 .setCustomId('next_page_disabled')
                                 .setLabel(lang.buttonNext)
-                                .setStyle(ButtonStyle.Secondary)
+                                .setStyle('SECONDARY')
                                 .setDisabled(true),
                         );
                     // Coba edit pesan terakhir, bisa saja pesan sudah terhapus

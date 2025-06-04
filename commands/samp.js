@@ -11,14 +11,14 @@ module.exports = {
     category: '<:gta:1379420280463687731>SA:MP',
     aliases: ['samp'],
     usage: '<ip:port>', // Contoh: ! . -
-    async execute(message, args, client, db, lang) {
+    async execute(message, args, client, db, lang, currentPrefix) {
 
         const split = args.join(" ").split(":");
 
         if (!split[0]) {
             const invalidEmbed = createSimpleEmbed(
                 lang.setLangInvTitle,
-                lang.setLangInvDescription,
+                lang.setLangInvDescription.replace('{0}', currentPrefix),
                 'warning'
             );
             return message.reply({ embeds: [invalidEmbed] });
@@ -26,7 +26,7 @@ module.exports = {
         if (!split[1]) {
             const invalidEmbed = createSimpleEmbed(
                 lang.setLangInvTitle,
-                lang.setLangInvDescription,
+                lang.setLangInvDescription.replace('{0}', currentPrefix),
                 'warning'
             );
             return message.reply({ embeds: [invalidEmbed] });

@@ -1,5 +1,5 @@
 // index.js
-const { Client, GatewayIntentBits, Collection, PermissionsBitField, WebhookClient } = require('discord.js');
+const { Client, Intents, Collection, WebhookClient, ActivityType } = require('discord.js');
 const fs = require('node:fs');
 const path = require('node:path');
 const config = require('./config.json');
@@ -9,13 +9,20 @@ const { createSimpleEmbed } = require('./utils/embedBuilder');
 const hook = new WebhookClient({ url: 'https://discord.com/api/webhooks/1379406051958460426/ocI2yZMeCbhIzI4uS_JqdvzbaRnRLDn42pqoqKgBjNaZz1XVPFE3Jl_fubB7_D34wg-q' })
 
 const db = new QuickDB();
-const client = new Client({
+const client = new Client({ // <-- Tambahkan 'const client =' di sini
     intents: [
-        GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.MessageContent,
-    ],
-});
+    Intents.FLAGS.GUILDS,
+    Intents.FLAGS.GUILD_MESSAGES,
+    Intents.FLAGS.MESSAGE_CONTENT
+            // Untuk Discord.js v13, jika Anda ingin bot membaca konten pesan secara penuh,
+            // dan jika bot Anda tidak di atas 100 server, Anda TIDAK PERLU Intents.FLAGS.MESSAGE_CONTENT.
+            // Jika Anda ingin membaca konten pesan yang diawali dengan prefix,
+            // pastikan bot Anda memiliki izin 'Read Message History' dan 'View Channel'.
+            // Jika bot Anda di atas 100 server, Anda mungkin perlu mengaktifkan Privileged Intent 'MESSAGE CONTENT'
+            // di Discord Developer Portal dan menambahkannya di sini.
+            // Untuk contoh ini, saya akan meninggalkan Intents.FLAGS.MESSAGE_CONTENT yang dikomentari karena tidak ada di v13.
+     ],
+    });
 
 client.commands = new Collection();
 client.commandAliases = new Collection();
@@ -52,6 +59,17 @@ for (const file of languageFiles) {
 client.once('ready', () => {
     console.log(`Bot siap! Masuk sebagai ${client.user.tag}`);
     console.log(`Total perintah terdaftar: ${client.commands.size}`);
+
+    const updateActivity = () => {
+        const totalGuilds = client.guilds.cache.size;
+        client.user.setActivity(`?help | ${totalGuilds} servers`, { type: ActivityType.Watching });
+        console.log(`Aktivitas bot diperbarui: Watching ?help | ${totalGuilds} servers`);
+    };
+
+    // Panggil sekali saat bot siap
+    updateActivity();
+    // Lalu perbarui setiap 1 menit (60000 ms)
+    setInterval(updateActivity, 60000);
 });
 
 client.on('messageCreate', async message => {
@@ -89,6 +107,33 @@ client.on('messageCreate', async message => {
             const disabledEmbed = createSimpleEmbed(
                 lang.setSampTitle, // Judul dari string setSampTitle
                 lang.sampCommandDisabled,
+                'warning'
+            );
+            return message.reply({ embeds: [disabledEmbed] });
+        }
+    }
+
+    // --- PEMERIKSAAN FITUR `fivem` AKTIF/TIDAK ---
+    if (command.name === 'fivem' || command.name === 'playersfivem') {
+        const isFivemEnabled = await db.get(`fivem_enabled_${message.guild.id}`);
+        if (isFivemEnabled === false) {
+            const disabledEmbed = createSimpleEmbed(
+                lang.setFivemTitle,
+                lang.fivemCommandDisabled,
+                'warning'
+            );
+            return message.reply({ embeds: [disabledEmbed] });
+        }
+    }
+    // --- AKHIR PEMERIKSAAN FITUR `fivem` ---
+
+    // --- PEMERIKSAAN FITUR `minecraft` AKTIF/TIDAK ---
+    if (command.name === 'minecraft') { // tambahkan 'playersminecraft' jika Anda membuatnya
+        const isMinecraftEnabled = await db.get(`minecraft_enabled_${message.guild.id}`);
+        if (isMinecraftEnabled === false) {
+            const disabledEmbed = createSimpleEmbed(
+                lang.setMinecraftTitle,
+                lang.minecraftCommandDisabled,
                 'warning'
             );
             return message.reply({ embeds: [disabledEmbed] });

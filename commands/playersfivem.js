@@ -1,6 +1,6 @@
 // commands/playersfivem.js
 const { createSimpleEmbed } = require('../utils/embedBuilder');
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionsBitField } = require('discord.js');
+const { MessageActionRow, MessageButton} = require('discord.js');
 const { GameDig } = require('gamedig'); // Impor pustaka gamedig
 
 // Fungsi untuk membagi array menjadi bagian-bagian (halaman)
@@ -94,17 +94,17 @@ module.exports = {
             const totalPages = pages.length;
 
             const getButtons = (currentPage, total) => {
-                const row = new ActionRowBuilder()
+                const row = new MessageActionRow()
                     .addComponents(
-                        new ButtonBuilder()
+                        new MessageButton()
                             .setCustomId('previous_page_fivem') // Custom ID yang unik
                             .setLabel(lang.buttonPrevious)
-                            .setStyle(ButtonStyle.Primary)
+                            .setStyle('PRIMARY')
                             .setDisabled(currentPage === 0),
-                        new ButtonBuilder()
+                        new MessageButton()
                             .setCustomId('next_page_fivem') // Custom ID yang unik
                             .setLabel(lang.buttonNext)
-                            .setStyle(ButtonStyle.Primary)
+                            .setStyle('PRIMARY')
                             .setDisabled(currentPage === total - 1)
                     );
                 return row;
@@ -136,17 +136,17 @@ module.exports = {
             });
 
             collector.on('end', async () => {
-                const disabledButtonsRow = new ActionRowBuilder()
+                const disabledButtonsRow = new MessageActionRow()
                     .addComponents(
-                        new ButtonBuilder()
+                        new MessageButton()
                             .setCustomId('previous_page_fivem_disabled')
                             .setLabel(lang.buttonPrevious)
-                            .setStyle(ButtonStyle.Secondary)
+                            .setStyle('SECONDARY')
                             .setDisabled(true),
-                        new ButtonBuilder()
+                        new MessageButton()
                             .setCustomId('next_page_fivem_disabled')
                             .setLabel(lang.buttonNext)
-                            .setStyle(ButtonStyle.Secondary)
+                            .setStyle('SECONDARY')
                             .setDisabled(true)
                     );
                 try {

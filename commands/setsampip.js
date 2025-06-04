@@ -1,6 +1,6 @@
 // commands/setip.js
 const { createSimpleEmbed } = require('../utils/embedBuilder');
-const { PermissionsBitField } = require('discord.js');
+const { Permissions } = require('discord.js');
 
 module.exports = {
     name: 'setsampip',
@@ -10,7 +10,7 @@ module.exports = {
     usage: '<ip:port | remove>', // Contoh: !setip 127.0.0.1:7777 atau !setip remove
     async execute(message, args, client, db, lang, currentPrefix) {
         // Periksa izin Administrator
-        if (!message.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
+        if (!message.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) {
             const noPermsEmbed = createSimpleEmbed(
                 lang.setIpNoPermission.split('.')[0],
                 lang.setIpNoPermission,
